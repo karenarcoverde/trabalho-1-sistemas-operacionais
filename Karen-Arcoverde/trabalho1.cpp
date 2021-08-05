@@ -5,26 +5,46 @@
 #include <cstdlib>
 #include <sys/types.h>
 
+
+// essas variaveis servem para escolher o sinal
+bool SIGUSR1_BOOL = false;
+bool SIGUSR2_BOOL = false;
+bool SIGTERM_BOOL = false;
+
+
 using namespace std;
 
-void sig_handler_1 (int sig){
+void sig_handler_1 (){
 
 
 }
 
-void sig_handler_2 (int sig){
-
-
+void sig_handler_2 (){
 
 
 }
 
-void sig_handler_term (int sig){
+void sig_handler_term (){
 	cout << "Finalizando o disparador... " << endl;
-        exit(0); // zero indica que obteve sucesso na execucao, assim como o return 0
+}
 
-// Referência usada:
-// https://www.cmmprogressivo.net/2019/12/Funcao-exit-sair-terminar-Cpp.html
+void sig_handler (int sig){
+
+	switch (sig){
+	case SIGUSR1:
+		SIGUSR1_BOOL = true;
+		break;
+
+	case SIGUSR2:
+		SIGUSR2_BOOL = true;
+		break;
+	
+	case SIGTERM:
+		SIGTERM_BOOL = true;
+		break;
+	default:
+		break;
+	}
 }
 
 int main (){
@@ -39,17 +59,26 @@ int main (){
 	cout << "PID: " << pid << endl;
 	
 	//disparador de sinais
-	signal (SIGUSR1, sig_handler_1);
-	signal (SIGUSR2, sig_handler_2);
-	signal (SIGTERM, sig_handler_term);
+	signal (SIGUSR1, sig_handler);
+	signal (SIGUSR2, sig_handler);
+	signal (SIGTERM, sig_handler);
 
 	// apos a execucao de cada tarefa, o programa devera voltar a esperar sinais, por isso fica em um loop infinito
-	while (true){
-		cout << "Esperar sinais" << endl;
-		sleep (5);
-	};
+        while (true){
+                cout << "Esperar sinais" << endl;
+		sleep(15);
 
-	return 0;
+		if (SIGUSR1_BOOL)
+			sig_handler_1 ();
+
+		if (SIGUSR2_BOOL)
+			sig_handler_2 ();
+
+		if (SIGTERM_BOOL){
+			sig_handler_term ();
+			return 0;
+		}
+	}
 
 	// Referências usadas: 
 	// http://linguagemc.com.br/loop-infinito-em-c/
