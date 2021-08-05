@@ -39,20 +39,14 @@ int main (){
 	cout << "PID: " << pid << endl;
 	
 	//disparador de sinais
-	if (signal (SIGUSR1, sig_handler_1) == SIG_ERR);
-		cout << "Nao foi possivel pegar SIGUSR1" << endl;
-
-	if (signal (SIGUSR2, sig_handler_2) == SIG_ERR);
-		cout << "Nao foi possivel pegar SIGUSR2" << endl;
-
-	if (signal (SIGTERM, sig_handler_term) == SIG_ERR);
-		cout << "Nao foi possivel pegar SIGTERM" << endl;
+	signal (SIGUSR1, sig_handler_1);
+	signal (SIGUSR2, sig_handler_2);
+	signal (SIGTERM, sig_handler_term);
 
 	// apos a execucao de cada tarefa, o programa devera voltar a esperar sinais, por isso fica em um loop infinito
 	while (true){
 		cout << "Esperar sinais" << endl;
 		sleep (5);
-
 	};
 
 	return 0;
