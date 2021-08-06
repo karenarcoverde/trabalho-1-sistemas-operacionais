@@ -4,22 +4,71 @@
 #include <signal.h>
 #include <cstdlib>
 #include <sys/types.h>
-
+#include <time.h>
+#include <stdlib.h>
+#include <wait.h>
 
 // essas variaveis servem para escolher o sinal
 bool SIGUSR1_BOOL = false;
 bool SIGUSR2_BOOL = false;
 bool SIGTERM_BOOL = false;
 
-
 using namespace std;
 
-void sig_handler_1 (){
+// tarefa 1
+int sig_handler_1 (int comandoParaExecutar){
+	time_t t;
+	int num_aleat;
 
+	srand((unsigned) time(&t));
 
+	int pipe1[2], pipe2[2];
+
+	//pai cria pipe
+	pipe(pipe1);
+	pipe(pipe2);
+
+	//pai cria processo filho
+	pid_t pid_filho = fork();
+
+	
+	if(pid_filho >= 0){ //sucesso em criar filho
+		//filho
+		if (pid_filho == 0){
+			//sorteio de numero aleatorio entre 1 e 100
+			num_aleat = rand() % 100;
+
+			//imprime numero aleatorio
+			cout << num_aleat << endl;
+
+			//envia para o pai o numero aleatorio
+			write(pipe2[1], &num_aleat, sizeof(num_aleat));
+			//filho fecha qualquer ponta aberta do pipe
+			close(pipe2[1]);
+
+			//forca finalizacao do filho para ir ao pai
+			exit(EXIT_SUCCESS);
+		}	
+		//pai
+		else{
+			//pai espera finalizacao do filho
+			int status = 0;
+			pid_t aux_pid;
+			while((aux_pid = wait(&status)) > 0);
+
+			//pai le o numero aleatorio sorteado pelo filho e coloca em uma variavel comandoParaExecutar 
+			read(pipe2[0], &comandoParaExecutar, sizeof(comandoParaExecutar));
+			//pai fecha qualquer ponta aberta do pipe
+			close(pipe2[0]);
+		}
+	}
+	return comandoParaExecutar;
+// Referências usadas:
+// https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
 }
 
-void sig_handler_2 (){
+// tarefa 2
+void sig_handler_2 (int comandoParaExecutar){
 
 
 }
@@ -69,10 +118,10 @@ int main (){
 		sleep(15);
 
 		if (SIGUSR1_BOOL)
-			sig_handler_1 ();
-
+			comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
+			
 		if (SIGUSR2_BOOL)
-			sig_handler_2 ();
+			sig_handler_2 (comandoParaExecutar);
 
 		if (SIGTERM_BOOL){
 			sig_handler_term ();
