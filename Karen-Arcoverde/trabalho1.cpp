@@ -166,24 +166,24 @@ int main (){
 	signal (SIGTERM, sig_handler);
 
 	// apos a execucao de cada tarefa, o programa devera voltar a esperar sinais, por isso fica em um loop infinito
-        while (true){
-            cout << "Esperar sinais" << endl;
-			sleep(15);
+    while (true){
+        cout << "Esperar sinais" << endl;
+		sleep(15);
 
-			if (SIGUSR1_BOOL){
-				comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
-				SIGUSR1_BOOL = false;
-			}
+		if (SIGUSR1_BOOL){
+			comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
+			SIGUSR1_BOOL = false;
+		}
 			
-			if (SIGUSR2_BOOL){
-				sig_handler_2 (comandoParaExecutar);
-				SIGUSR2_BOOL = false;
-			}
+		if (SIGUSR2_BOOL){
+			sig_handler_2 (comandoParaExecutar);
+			SIGUSR2_BOOL = false;
+		}
 
-			if (SIGTERM_BOOL){
-				sig_handler_term ();
-				return 0;
-			}
+		if (SIGTERM_BOOL){
+			sig_handler_term ();
+			return 0;
+		}
 	}
 
 	// Referências usadas: 
