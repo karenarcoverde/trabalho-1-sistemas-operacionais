@@ -7,6 +7,8 @@
 #include <time.h>
 #include <stdlib.h>
 #include <wait.h>
+#define LER                             0
+#define ESCREVER                        1
 
 // essas variaveis servem para escolher o sinal
 bool SIGUSR1_BOOL = false;
@@ -18,53 +20,69 @@ using namespace std;
 // tarefa 1
 int sig_handler_1 (int comandoParaExecutar){
 	time_t t;
-	int num_aleat;
+	int aleatorio;
+	pid_t pid_filho;
 
-	srand((unsigned) time(&t));
+	srand((unsigned) time(&t)); //tempo como argumento do srand
 
-	int pipe1[2], pipe2[2];
+	int pipe1[2]; 
+	int pipe2[2];
+	// 0 - leitura
+	// 1 - escrita
 
 	//pai cria pipe
-	pipe(pipe1);
-	pipe(pipe2);
+	if (pipe(pipe1) == -1)
+		cout << "Falha no Pipe " << endl;
+
+	if (pipe(pipe2) == -1)
+		cout << "Falha no Pipe " << endl; 
 
 	//pai cria processo filho
-	pid_t pid_filho = fork();
+	pid_filho = fork();
 
-	
-	if(pid_filho >= 0){ //sucesso em criar filho
-		//filho
-		if (pid_filho == 0){
-			//sorteio de numero aleatorio entre 1 e 100
-			num_aleat = rand() % 100;
-
-			//imprime numero aleatorio
-			cout << num_aleat << endl;
-
-			//envia para o pai o numero aleatorio
-			write(pipe2[1], &num_aleat, sizeof(num_aleat));
-			//filho fecha qualquer ponta aberta do pipe
-			close(pipe2[1]);
-
-			//forca finalizacao do filho para ir ao pai
-			exit(EXIT_SUCCESS);
-		}	
-		//pai
-		else{
-			//pai espera finalizacao do filho
-			int status = 0;
-			pid_t aux_pid;
-			while((aux_pid = wait(&status)) > 0);
-
-			//pai le o numero aleatorio sorteado pelo filho e coloca em uma variavel comandoParaExecutar 
-			read(pipe2[0], &comandoParaExecutar, sizeof(comandoParaExecutar));
-			//pai fecha qualquer ponta aberta do pipe
-			close(pipe2[0]);
-		}
+	if (pid_filho < 0){ //se ocorrer erro 
+		cout << "Falha no fork " << endl;
+		exit(EXIT_FAILURE);
 	}
+
+	//pai
+	if (pid_filho > 0){
+		//pai espera finalizacao do filho
+		wait(NULL);
+
+		//pai le o numero aleatorio sorteado pelo filho e coloca em uma variavel comandoParaExecutar 
+		read(pipe2[LER], &comandoParaExecutar, sizeof(comandoParaExecutar));
+		//pai fecha qualquer ponta aberta do pipe
+		close(pipe2[LER]);
+	}
+	
+	//filho
+	else{
+		//sorteio de numero aleatorio entre 1 e 100
+		aleatorio = rand() % 100;
+
+		//imprime numero aleatorio
+		cout << aleatorio << endl;
+
+		//envia para o pai o numero aleatorio
+		write(pipe2[ESCREVER], &aleatorio, sizeof(aleatorio));
+		//filho fecha qualquer ponta aberta do pipe
+		close(pipe2[ESCREVER]);
+
+		//forca finalizacao do filho para ir ao pai
+		exit(EXIT_SUCCESS);
+	}	
 	return comandoParaExecutar;
+
 // Referências usadas:
 // https://www.tutorialspoint.com/c_standard_library/c_function_srand.htm
+// https://www.youtube.com/watch?v=D88bdcJH6Jw&ab_channel=RodrigodeSouzaCouto
+// https://linux.die.net/man/2/write
+// https://linux.die.net/man/3/read
+// https://www.geeksforgeeks.org/c-program-demonstrate-fork-and-pipe/
+// https://man7.org/linux/man-pages/man2/pipe.2.html
+// https://linuxhint.com/pipe_system_call_c/
+// Livro: Fundamentos de Sistemas Operacionais - Nona Edição - Autores: Abraham Silberschatz, Peter Baer Galvin e Greg Gagne
 }
 
 // tarefa 2
