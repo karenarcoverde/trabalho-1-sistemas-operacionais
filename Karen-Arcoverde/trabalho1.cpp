@@ -21,7 +21,7 @@ using namespace std;
 int sig_handler_1 (int comandoParaExecutar){
 	time_t t;
 	int aleatorio;
-	pid_t pid_filho;
+	pid_t pid_filho_tf1;
 
 	srand((unsigned) time(&t)); //tempo como argumento do srand
 
@@ -38,15 +38,15 @@ int sig_handler_1 (int comandoParaExecutar){
 		cout << "Falha no Pipe " << endl; 
 
 	//pai cria processo filho
-	pid_filho = fork();
+	pid_filho_tf1 = fork();
 
-	if (pid_filho < 0){ //se ocorrer erro 
+	if (pid_filho_tf1 < 0){ //se ocorrer erro ao criar processo filho
 		cout << "Falha no fork " << endl;
 		exit(EXIT_FAILURE);
 	}
 
 	//pai
-	if (pid_filho > 0){
+	if (pid_filho_tf1 > 0){
 		//pai espera finalizacao do filho
 		wait(NULL);
 
@@ -87,8 +87,39 @@ int sig_handler_1 (int comandoParaExecutar){
 
 // tarefa 2
 void sig_handler_2 (int comandoParaExecutar){
+/*
+	pid_t pid_filho_tf2;
+	//pai cria processo filho
+	pid_filho_tf2 = fork();
 
+	if (pid_filho_tf2 < 0){ //se ocorrer erro ao criar processo filho
+		cout << "Falha no fork " << endl;
+		exit(EXIT_FAILURE);
+	}
 
+	//pai
+	if (pid_filho_tf2 > 0){
+
+		//pai espera finalizacao do filho
+		wait(NULL);
+	}
+
+	//filho
+	else{
+		if (comandoParaExecutar == 0)
+			cout << "Nao ha comando a executar " << endl;
+
+		if ((comandoParaExecutar != 0) and (comandoParaExecutar % 2 == 0))
+			execlp("/bin/ping","ping","8.8.8.8","-c","5",NULL);
+
+		else{ 
+			execlp("/bin/ping","ping","paris.testdebit.info","-c","5",-i,2);
+		}
+	}
+*/
+
+	// Referências usadas:
+	// pingExample.c fornecido pelo professor
 }
 
 void sig_handler_term (){
@@ -132,19 +163,23 @@ int main (){
 
 	// apos a execucao de cada tarefa, o programa devera voltar a esperar sinais, por isso fica em um loop infinito
         while (true){
-                cout << "Esperar sinais" << endl;
-		sleep(15);
+            cout << "Esperar sinais" << endl;
+			sleep(15);
 
-		if (SIGUSR1_BOOL)
-			comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
+			if (SIGUSR1_BOOL){
+				comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
+				SIGUSR1_BOOL = false;
+			}
 			
-		if (SIGUSR2_BOOL)
-			sig_handler_2 (comandoParaExecutar);
+			if (SIGUSR2_BOOL){
+				sig_handler_2 (comandoParaExecutar);
+				SIGUSR1_BOOL = false;
+			}
 
-		if (SIGTERM_BOOL){
-			sig_handler_term ();
-			return 0;
-		}
+			if (SIGTERM_BOOL){
+				sig_handler_term ();
+				return 0;
+			}
 	}
 
 	// Referências usadas: 
