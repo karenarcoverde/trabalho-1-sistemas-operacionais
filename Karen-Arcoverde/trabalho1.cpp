@@ -106,12 +106,15 @@ void sig_handler_2 (int comandoParaExecutar){
 
 	//filho
 	else{
+		//se for 0 imprime mensagem na tela e finaliza a execucao
 		if (comandoParaExecutar == 0)
 			cout << "Nao ha comando a executar " << endl;
-
+		
+		//filho chama o exec para executar o ping, faz o caso 2: se for diferente de zero e numero par
 		if ((comandoParaExecutar != 0) and (comandoParaExecutar % 2 == 0))
 			execlp("/bin/ping","ping","8.8.8.8","-c","5",NULL);
 
+		//filho chama o exec para executar o ping, faz o caso 3: se for numero impar
 		else{ 
 			execlp("/bin/ping","ping","paris.testdebit.info","-c","5","-i","2",NULL);
 		}
