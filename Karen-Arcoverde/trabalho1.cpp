@@ -115,9 +115,8 @@ void sig_handler_2 (int comandoParaExecutar){
 			execlp("/bin/ping","ping","8.8.8.8","-c","5",NULL);
 
 		//filho chama o exec para executar o ping, faz o caso 3: se for numero impar
-		else{ 
+		else
 			execlp("/bin/ping","ping","paris.testdebit.info","-c","5","-i","2",NULL);
-		}
 	}
 
 	// Referências usadas:
