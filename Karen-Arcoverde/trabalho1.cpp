@@ -99,7 +99,6 @@ void sig_handler_2 (int comandoParaExecutar){
 
 	//pai
 	if (pid_filho_tf2 > 0){
-
 		//pai espera finalizacao do filho
 		wait(NULL);
 	}
@@ -115,8 +114,10 @@ void sig_handler_2 (int comandoParaExecutar){
 			execlp("/bin/ping","ping","8.8.8.8","-c","5",NULL);
 
 		//filho chama o exec para executar o ping, faz o caso 3: se for numero impar
-		else
+		else if ((comandoParaExecutar !=0) and (comandoParaExecutar % 2 != 0))
 			execlp("/bin/ping","ping","paris.testdebit.info","-c","5","-i","2",NULL);
+
+		exit(EXIT_SUCCESS);
 	}
 
 	// Referências usadas:
@@ -176,7 +177,7 @@ int main (){
 			
 			if (SIGUSR2_BOOL){
 				sig_handler_2 (comandoParaExecutar);
-				SIGUSR1_BOOL = false;
+				SIGUSR2_BOOL = false;
 			}
 
 			if (SIGTERM_BOOL){
