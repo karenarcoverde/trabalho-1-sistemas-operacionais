@@ -26,16 +26,12 @@ int sig_handler_1 (int comandoParaExecutar){
 	srand((unsigned) time(&t)); //tempo como argumento do srand
 
 	int pipe1[2]; 
-	int pipe2[2];
 	// 0 - leitura
 	// 1 - escrita
 
 	//pai cria pipe
 	if (pipe(pipe1) == -1)
 		cout << "Falha no Pipe " << endl;
-
-	if (pipe(pipe2) == -1)
-		cout << "Falha no Pipe " << endl; 
 
 	//pai cria processo filho
 	pid_filho_tf1 = fork();
@@ -51,9 +47,9 @@ int sig_handler_1 (int comandoParaExecutar){
 		wait(NULL);
 
 		//pai le o numero aleatorio sorteado pelo filho e coloca em uma variavel comandoParaExecutar 
-		read(pipe2[LER], &comandoParaExecutar, sizeof(comandoParaExecutar));
+		read(pipe1[LER], &comandoParaExecutar, sizeof(comandoParaExecutar));
 		//pai fecha qualquer ponta aberta do pipe
-		close(pipe2[LER]);
+		close(pipe1[LER]);
 	}
 	
 	//filho
@@ -65,9 +61,9 @@ int sig_handler_1 (int comandoParaExecutar){
 		cout << aleatorio << endl;
 
 		//envia para o pai o numero aleatorio
-		write(pipe2[ESCREVER], &aleatorio, sizeof(aleatorio));
+		write(pipe1[ESCREVER], &aleatorio, sizeof(aleatorio));
 		//filho fecha qualquer ponta aberta do pipe
-		close(pipe2[ESCREVER]);
+		close(pipe1[ESCREVER]);
 
 		//forca finalizacao do filho para ir ao pai
 		exit(EXIT_SUCCESS);
@@ -131,7 +127,7 @@ void sig_handler_term (){
 }
 
 void sig_handler (int sig){
-
+//nessa função, dependendo do comando digitado no terminal, ele muda a variável booleana para verdadeiro para selecionar a tarefa 
 	switch (sig){
 	case SIGUSR1:
 		SIGUSR1_BOOL = true;
@@ -153,6 +149,8 @@ int main (){
 
 	pid_t pid; 
 	int comandoParaExecutar = 0; //inicia com o valor zero (default) 
+	// colocar ele no valor zero evita que dê erro no caso que executa a tarefa 2 sem ter executado a tarefa 1. Posteriormente, um if tratando essa 
+	// exceção é feita.
 	
 	//pega o valor do pid
 	pid = getpid ();
@@ -169,10 +167,11 @@ int main (){
     while (true){
         cout << "Esperar sinais" << endl;
 		sleep(15);
-
+		//aqui é feito um if com booleanos para selecionar qual tarefa irá executar de acordo com o comando digitado no terminal
 		if (SIGUSR1_BOOL){
 			comandoParaExecutar = sig_handler_1 (comandoParaExecutar);
-			SIGUSR1_BOOL = false;
+			SIGUSR1_BOOL = false; //depois de ter executado a tarefa, muda o valor da variável booleana para falso de forma a não executar mais essa tarefa,
+								  //somente se o sinal for disparado de novo.
 		}
 			
 		if (SIGUSR2_BOOL){
