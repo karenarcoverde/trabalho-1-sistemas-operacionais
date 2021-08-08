@@ -59,7 +59,7 @@ int sig_handler_1 (int comandoParaExecutar){
 	//filho
 	else{
 		//sorteio de numero aleatorio entre 1 e 100
-		aleatorio = rand() % 100;
+		aleatorio = rand() % 100 + 1;
 
 		//imprime numero aleatorio
 		cout << aleatorio << endl;
@@ -83,11 +83,11 @@ int sig_handler_1 (int comandoParaExecutar){
 // https://man7.org/linux/man-pages/man2/pipe.2.html
 // https://linuxhint.com/pipe_system_call_c/
 // Livro: Fundamentos de Sistemas Operacionais - Nona Edição - Autores: Abraham Silberschatz, Peter Baer Galvin e Greg Gagne
+// https://www.cplusplus.com/reference/cstdlib/rand/
 }
 
 // tarefa 2
 void sig_handler_2 (int comandoParaExecutar){
-
 	pid_t pid_filho_tf2;
 	//pai cria processo filho
 	pid_filho_tf2 = fork();
@@ -119,6 +119,7 @@ void sig_handler_2 (int comandoParaExecutar){
 			execlp("/bin/ping","ping","paris.testdebit.info","-c","5","-i","2",NULL);
 		}
 	}
+
 	// Referências usadas:
 	// pingExample.c fornecido pelo professor
 	// https://www.geeksforgeeks.org/exec-family-of-functions-in-c/
