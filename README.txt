@@ -1,4 +1,4 @@
-Trabalho 1 de Sistemas Operacionais (EEL770)
+Trabalho 1 de Sistemas Operacionais (EEL770) do período de 2021.1
 Aluna: Karen dos Anjos Arcoverde
 
 Sistema operacional usado: Linux
