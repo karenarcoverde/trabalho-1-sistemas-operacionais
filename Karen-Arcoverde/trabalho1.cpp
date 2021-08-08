@@ -87,7 +87,7 @@ int sig_handler_1 (int comandoParaExecutar){
 
 // tarefa 2
 void sig_handler_2 (int comandoParaExecutar){
-/*
+
 	pid_t pid_filho_tf2;
 	//pai cria processo filho
 	pid_filho_tf2 = fork();
@@ -113,13 +113,12 @@ void sig_handler_2 (int comandoParaExecutar){
 			execlp("/bin/ping","ping","8.8.8.8","-c","5",NULL);
 
 		else{ 
-			execlp("/bin/ping","ping","paris.testdebit.info","-c","5",-i,2);
+			execlp("/bin/ping","ping","paris.testdebit.info","-c","5","-i","2",NULL);
 		}
 	}
-*/
-
 	// Referências usadas:
 	// pingExample.c fornecido pelo professor
+	// https://www.geeksforgeeks.org/exec-family-of-functions-in-c/
 }
 
 void sig_handler_term (){
