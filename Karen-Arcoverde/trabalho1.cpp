@@ -119,6 +119,7 @@ void sig_handler_2 (int comandoParaExecutar){
 	// Referências usadas:
 	// pingExample.c fornecido pelo professor
 	// https://www.geeksforgeeks.org/exec-family-of-functions-in-c/
+	// https://www.hostinger.com.br/tutoriais/comando-ping-linux
 }
 
 void sig_handler_term (){
